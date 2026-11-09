@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chai Flake - Order Menu & Live Tracker</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f59e0b;
+            --primary-dark: #d97706;
+            --bg-dark: #0f172a;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --accent-green: #10b981;
+            --blue: #3b82f6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 120px;
+        }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.8rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-container-v3 {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo-icon-v3 {
+            font-size: 1.4rem;
+            background: linear-gradient(180deg, #d97706, #78350f);
+            padding: 0.4rem 0.5rem;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(217, 119, 6, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-title-v3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+
+        .brand-subtitle-v3 {
+            display: block;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.55rem;
+            font-weight: 700;
+            color: #94a3b8;
+            letter-spacing: 1px;
+            margin-top: 0.2rem;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* Active Orders Section */
+        .active-orders-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1rem;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .active-orders-header {
+            font-size: 0.95rem;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .orders-track-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .order-track-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-track-info h4 {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--bg-dark);
+            margin-bottom: 0.1rem;
+        }
+
+        .order-track-info p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .order-status-pill {
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .status-Received { background: rgba(59, 130, 246, 0.1); color: var(--blue); border: 1px solid rgba(59, 130, 246, 0.3); }
+        .status-Preparing { background: rgba(245, 158, 11, 0.1); color: var(--primary-dark); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .status-Ready { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        /* Search & Categories */
+        .controls-wrapper {
+            margin-bottom: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            font-size: 0.95rem;
+            outline: none;
+            background: var(--card-bg);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .categories {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.4rem;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .category-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 0.45rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .category-btn.active {
+            background: var(--bg-dark);
+            color: var(--primary);
+            border-color: var(--bg-dark);
+        }
+
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 0.9rem;
+        }
+
+        @media(min-width: 600px) {
+            .menu-grid {
+                grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+                gap: 1.2rem;
+            }
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            background: #e2e8f0;
+        }
+
+        .product-info {
+            padding: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .product-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            margin-bottom: 0.2rem;
+        }
+
+        .product-cat {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+        }
+
+        .product-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.4rem;
+        }
+
+        .product-price {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--bg-dark);
+        }
+
+        .btn-add {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        /* Fixed Cart Bar */
+        .cart-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 0.8rem 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            z-index: 1000;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+        }
+
+        .cart-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .cart-header-inputs {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+        }
+
+        .room-input {
+            flex: 1;
+            padding: 0.6rem 0.8rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .room-input::placeholder { color: #94a3b8; }
+
+        .cart-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+        }
+
+        .cart-items-preview {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            max-width: 60%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .cart-total-price {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .btn-order {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #toast-container {
+            position: fixed;
+            top: 70px;
+            right: 15px;
+            left: 15px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .toast {
+            background: var(--bg-dark);
+            color: #fff;
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            margin-top: 0.4rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-align: center;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .empty-msg {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 2rem 1rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo-container-v3">
+            <div class="logo-icon-v3">☕</div>
+            <div class="logo-text-v3">
+                <h1 class="brand-title-v3">CHAI FLAKE</h1>
+                <span class="brand-subtitle-v3">Order Online</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- LIVE ORDER TRACKER SECTION -->
+        <div class="active-orders-section">
+            <div class="active-orders-header">
+                <span>📋 My Active Orders</span>
+                <span id="active-count" style="font-size:0.75rem; color:var(--text-muted);">0 active</span>
+            </div>
+            <div class="orders-track-grid" id="active-orders-container">
+                <div style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:0.4rem;">No active orders right now.</div>
+            </div>
+        </div>
+
+        <div class="controls-wrapper">
+            <input type="text" class="search-bar" id="search-input" placeholder="Search tea, snacks, breakfast..." oninput="handleSearch(this.value)">
+            <div class="categories" id="category-container">
+                <button class="category-btn active" onclick="filterCategory('All', this)">All</button>
+                <button class="category-btn" onclick="filterCategory('Beverages', this)">Beverages</button>
+                <button class="category-btn" onclick="filterCategory('Breakfast & Flakes', this)">Breakfast & Flakes</button>
+                <button class="category-btn" onclick="filterCategory('Snacks', this)">Snacks</button>
+                <button class="category-btn" onclick="filterCategory('Cigarette', this)">Cigarette</button>
+            </div>
+        </div>
+
+        <div class="menu-grid" id="menu-grid">
+            <div class="empty-msg">Loading products...</div>
+        </div>
+    </div>
+
+    <!-- Fixed Bottom Cart Bar -->
+    <div class="cart-bar">
+        <div class="cart-container">
+            <div class="cart-header-inputs">
+                <input type="text" id="room-number" class="room-input" placeholder="Enter Room or Table No. (Required)">
+            </div>
+            <div class="cart-summary">
+                <span class="cart-items-preview" id="cart-preview">Cart is empty</span>
+                <span class="cart-total-price" id="cart-total">₹0.00</span>
+            </div>
+            <button class="btn-order" onclick="placeOrder()">Place Order</button>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        const fallbackImage = 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=400&q=80';
+        const API_BASE_URL = 'http://127.0.0.1:8000/api';
+
+        let products = [];
+        let cart = [];
+        let currentCategory = 'All';
+        let searchQuery = '';
+
+        // 1. Fetch Products from Django Backend
+        async function loadProducts() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/products/`);
+                if (!response.ok) throw new Error('Failed to load menu');
+                products = await response.json();
+                renderMenu();
+            } catch (err) {
+                console.error("Error loading products:", err);
+                document.getElementById('menu-grid').innerHTML = `<div class="empty-msg" style="color:#ef4444;">Could not connect to Django server.</div>`;
+            }
+        }
+
+        // 2. Fetch Active Orders and Filter out Delivered ones
+        async function fetchActiveOrders() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/orders/`);
+                if (!response.ok) return;
+                const allOrders = await response.json();
+                
+                // Filter out orders that are marked as 'Delivered'
+                const activeOrders = allOrders.filter(o => o.status !== 'Delivered');
+                renderActiveOrders(activeOrders);
+            } catch (err) {
+                console.error("Error fetching orders:", err);
+            }
+        }
+
+        function renderActiveOrders(activeOrders) {
+            const container = document.getElementById('active-orders-container');
+            document.getElementById('active-count').textContent = `${activeOrders.length} active`;
+
+            if (activeOrders.length === 0) {
+                container.innerHTML = `<div style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:0.4rem;">No active orders right now.</div>`;
+                return;
+            }
+
+            container.innerHTML = activeOrders.map(o => `
+                <div class="order-track-card">
+                    <div class="order-track-info">
+                        <h4>Order #${o.id} • Room/Table: ${o.room}</h4>
+                        <p>${o.items} — <strong>₹${parseFloat(o.total).toFixed(2)}</strong></p>
+                    </div>
+                    <span class="order-status-pill status-${o.status}">${o.status}</span>
+                </div>
+            `).join('');
+        }
+
+        // 3. Render Menu Cards
+        function renderMenu() {
+            const grid = document.getElementById('menu-grid');
+            let filtered = products.filter(p => {
+                const matchesCat = currentCategory === 'All' || p.category === currentCategory;
+                const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesCat && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="empty-msg">No items found.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(p => `
+                <div class="product-card">
+                    <img src="${p.image || fallbackImage}" class="product-img" onerror="this.src='${fallbackImage}'" alt="${p.name}">
+                    <div class="product-info">
+                        <div>
+                            <div class="product-title">${p.name}</div>
+                            <div class="product-cat">${p.category}</div>
+                        </div>
+                        <div class="product-bottom">
+                            <span class="product-price">₹${parseFloat(p.price).toFixed(2)}</span>
+                            <button class="btn-add" onclick="addToCart(${p.id})">+ Add</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 4. Cart Functions
+        function addToCart(productId) {
+            const item = products.find(p => p.id === productId);
+            if (!item) return;
+
+            const existing = cart.find(c => c.id === productId);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ ...item, qty: 1 });
+            }
+
+            showToast(`Added "${item.name}" to cart`);
+            renderCart();
+        }
+
+        function renderCart() {
+            const preview = document.getElementById('cart-preview');
+            const totalEl = document.getElementById('cart-total');
+
+            if (cart.length === 0) {
+                preview.textContent = 'Cart is empty';
+                totalEl.textContent = '₹0.00';
+                return;
+            }
+
+            const total = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.qty), 0);
+            const summary = cart.map(item => `${item.name} (${item.qty})`).join(', ');
+
+            preview.textContent = summary;
+            totalEl.textContent = `₹${total.toFixed(2)}`;
+        }
+
+        // 5. Send Order to Django Backend
+        async function placeOrder() {
+            const roomNum = document.getElementById('room-number').value.trim();
+
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+
+            if (!roomNum) {
+                alert('Please enter your Room or Table number.');
+                document.getElementById('room-number').focus();
+                return;
+            }
+
+            const totalAmount = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.qty), 0);
+            const itemSummary = cart.map(item => `${item.name} (x${item.qty})`).join(', ');
+
+            const newOrder = {
+                room: roomNum,
+                items: itemSummary,
+                total: totalAmount.toFixed(2),
+                status: 'Received'
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/orders/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newOrder)
+                });
+
+                if (response.ok) {
+                    showToast("Order Placed Successfully! 🚀");
+                    cart = [];
+                    document.getElementById('room-number').value = '';
+                    renderCart();
+                    fetchActiveOrders(); // Refresh order tracker immediately
+                } else {
+                    alert('Failed to place order.');
+                }
+            } catch (err) {
+                console.error("Error placing order:", err);
+                alert('Could not connect to Django server.');
+            }
+        }
+
+        // 6. Helpers & Filters
+        function filterCategory(cat, btn) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderMenu();
+        }
+
+        function handleSearch(val) {
+            searchQuery = val;
+            renderMenu();
+        }
+
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+
+        // Initialize page data & polling
+        loadProducts();
+        fetchActiveOrders();
+        setInterval(fetchActiveOrders, 5000); // Poll orders every 5 seconds
+    </script>
+</body>
+</html>

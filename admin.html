@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chai Flake - Django Admin Dashboard</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f59e0b;
+            --primary-dark: #d97706;
+            --bg-dark: #0f172a;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --accent-green: #10b981;
+            --danger: #ef4444;
+            --blue: #3b82f6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-bottom: 2rem;
+        }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.8rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-container-v3 {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo-icon-v3 {
+            font-size: 1.4rem;
+            background: linear-gradient(180deg, #d97706, #78350f);
+            padding: 0.4rem 0.5rem;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(217, 119, 6, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-title-v3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+
+        .brand-subtitle-v3 {
+            display: block;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.55rem;
+            font-weight: 700;
+            color: #94a3b8;
+            letter-spacing: 1px;
+            margin-top: 0.2rem;
+            text-transform: uppercase;
+        }
+
+        .admin-header-right {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .admin-badge {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+
+        /* Auth Container */
+        .auth-wrapper {
+            max-width: 400px;
+            margin: 3rem auto;
+            width: 100%;
+            padding: 0 1rem;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.6rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .auth-card h2 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+            color: var(--bg-dark);
+        }
+
+        .auth-card p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .auth-form .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .auth-form label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+            text-transform: uppercase;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            outline: none;
+            background: #fff;
+        }
+
+        .btn-auth {
+            background: var(--bg-dark);
+            color: var(--primary);
+            border: none;
+            padding: 0.8rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 800;
+            width: 100%;
+            font-size: 0.95rem;
+            margin-top: 0.4rem;
+        }
+
+        /* Dashboard Layout */
+        .container {
+            max-width: 1200px;
+            margin: 1rem auto;
+            padding: 0 0.8rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
+        }
+
+        @media(min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1.2rem;
+                margin-bottom: 2rem;
+            }
+            .container {
+                padding: 0 1.5rem;
+                margin: 2rem auto;
+            }
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            background: #f1f5f9;
+            padding: 0.6rem;
+            border-radius: 10px;
+        }
+
+        .stat-info h3 {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .stat-info .stat-value {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--bg-dark);
+        }
+
+        .section-box {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.2rem;
+            border: 1px solid var(--border);
+            margin-bottom: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        @media(min-width: 768px) {
+            .section-box {
+                padding: 1.8rem;
+                margin-bottom: 2rem;
+            }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-header h2 {
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .product-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        @media(min-width: 768px) {
+            .product-form {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                align-items: end;
+                gap: 1rem;
+            }
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+            text-transform: uppercase;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            background: #fff;
+            outline: none;
+        }
+
+        .btn-submit {
+            background: var(--bg-dark);
+            color: var(--primary);
+            border: none;
+            padding: 0.8rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            white-space: nowrap;
+        }
+
+        table th {
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+        }
+
+        table td {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .table-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+        }
+
+        .inline-price-input {
+            width: 75px;
+            padding: 0.35rem 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .btn-sm {
+            padding: 0.35rem 0.6rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+
+        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .btn-save { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); margin-right: 0.2rem; }
+
+        .status-select {
+            padding: 0.35rem 0.5rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        #toast-container {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            left: 15px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .toast {
+            background: var(--bg-dark);
+            color: #fff;
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            margin-top: 0.4rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-align: center;
+            width: 100%;
+            max-width: 350px;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo-container-v3">
+            <div class="logo-icon-v3">☕</div>
+            <div class="logo-text-v3">
+                <h1 class="brand-title-v3">CHAI FLAKE</h1>
+                <span class="brand-subtitle-v3">Django Admin Panel</span>
+            </div>
+        </div>
+        <div class="admin-header-right">
+            <div class="admin-badge" id="admin-user-display">🛠️ ADMIN</div>
+            <button class="btn-logout hidden" id="logout-btn" onclick="handleLogout()">Logout</button>
+        </div>
+    </header>
+
+    <!-- AUTH LOGIN SECTION -->
+    <div class="auth-wrapper" id="login-section">
+        <div class="auth-card">
+            <h2>Admin Login (4-Digit PIN)</h2>
+            <p>Enter your 4-digit PIN to access dashboard controls.</p>
+            <form class="auth-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="login-pin">4-Digit PIN</label>
+                    <input type="password" id="login-pin" required maxlength="4" pattern="[0-9]{4}" placeholder="e.g. 1234">
+                </div>
+                <button type="submit" class="btn-auth">Log In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div class="container hidden" id="dashboard-section">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-info">
+                    <h3>Revenue</h3>
+                    <div class="stat-value" id="stat-revenue">₹0.00</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🛒</div>
+                <div class="stat-info">
+                    <h3>Active Orders</h3>
+                    <div class="stat-value" id="stat-active-orders">0</div>
+                </div>
+            </div>
+            <div class="stat-card" style="grid-column: span 2;">
+                <div class="stat-icon">📋</div>
+                <div class="stat-info">
+                    <h3>Menu Items</h3>
+                    <div class="stat-value" id="stat-products-count">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-header">
+                <h2>Add New Product to Django Database</h2>
+            </div>
+            <form class="product-form" onsubmit="handleAddProduct(event)">
+                <div class="form-group">
+                    <label for="prod-name">Name</label>
+                    <input type="text" id="prod-name" required placeholder="e.g. Special Chai">
+                </div>
+                <div class="form-group">
+                    <label for="prod-category">Category</label>
+                    <select id="prod-category">
+                        <option value="Beverages">Beverages</option>
+                        <option value="Breakfast & Flakes">Breakfast & Flakes</option>
+                        <option value="Snacks">Snacks</option>
+                        <option value="Cigarette">Cigarette</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="prod-price">Price (₹)</label>
+                    <input type="number" step="0.01" id="prod-price" required placeholder="50.00">
+                </div>
+                <div class="form-group">
+                    <label for="prod-file">Photo</label>
+                    <input type="file" id="prod-file" accept="image/*">
+                </div>
+                <button type="submit" class="btn-submit">+ Save Item</button>
+            </form>
+        </div>
+
+        <div class="section-box">
+            <div class="section-header">
+                <h2>Manage Menu & Prices</h2>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Img</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Update</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-products-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-header">
+                <h2>Live Customer Orders</h2>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Time</th>
+                            <th>Room/Table</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-orders-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        const fallbackImage = 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=400&q=80';
+        const ADMIN_PIN = "1234";
+        const API_BASE_URL = 'http://127.0.0.1:8000/api';
+        
+        let products = [];
+        let orders = [];
+        let isLoggedIn = sessionStorage.getItem('chai_admin_logged_in') === 'true';
+
+        function initAuth() {
+            if (isLoggedIn) {
+                showDashboard();
+            } else {
+                document.getElementById('login-section').classList.remove('hidden');
+                document.getElementById('dashboard-section').classList.add('hidden');
+                document.getElementById('logout-btn').classList.add('hidden');
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const pin = document.getElementById('login-pin').value.trim();
+            if (pin === ADMIN_PIN) {
+                sessionStorage.setItem('chai_admin_logged_in', 'true');
+                isLoggedIn = true;
+                showToast("Login Successful!");
+                showDashboard();
+            } else {
+                alert('Incorrect 4-digit PIN. (Default is 1234)');
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('chai_admin_logged_in');
+            isLoggedIn = false;
+            showToast('Logged out successfully');
+            initAuth();
+        }
+
+        function showDashboard() {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.remove('hidden');
+            document.getElementById('logout-btn').classList.remove('hidden');
+            fetchProducts();
+            fetchOrders();
+            setInterval(fetchOrders, 5000);
+        }
+
+        async function fetchProducts() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/products/`);
+                products = await res.json();
+                renderAdminProducts();
+                updateStats();
+            } catch (err) {
+                console.error("Error fetching products:", err);
+            }
+        }
+
+        async function fetchOrders() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/orders/`);
+                orders = await res.json();
+                renderAdminOrders();
+                updateStats();
+            } catch (err) {
+                console.error("Error fetching orders:", err);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('stat-products-count').textContent = products.length;
+            const activeOrders = orders.filter(o => o.status !== 'Delivered');
+            document.getElementById('stat-active-orders').textContent = activeOrders.length;
+            const totalRevenue = orders.reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
+            document.getElementById('stat-revenue').textContent = `₹${totalRevenue.toFixed(2)}`;
+        }
+
+        function renderAdminProducts() {
+            const tbody = document.getElementById('admin-products-table');
+            if (products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No products in database. Add one above!</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td><img src="${p.image || fallbackImage}" class="table-img" onerror="this.src='${fallbackImage}'"></td>
+                    <td><strong>${p.name}</strong></td>
+                    <td><span style="background:#f1f5f9; padding:0.2rem 0.4rem; border-radius:4px; font-size:0.75rem; font-weight:700;">${p.category}</span></td>
+                    <td><strong>₹${parseFloat(p.price).toFixed(2)}</strong></td>
+                    <td>
+                        <input type="number" step="0.01" value="${parseFloat(p.price).toFixed(2)}" class="inline-price-input" id="price-input-${p.id}">
+                        <button class="btn-sm btn-save" onclick="updatePrice(${p.id})">Save</button>
+                    </td>
+                    <td>
+                        <button class="btn-sm btn-danger" onclick="deleteProduct(${p.id})">Del</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function handleAddProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('prod-name').value.trim();
+            const category = document.getElementById('prod-category').value;
+            const price = parseFloat(document.getElementById('prod-price').value);
+            const fileInput = document.getElementById('prod-file');
+
+            let imageUrl = fallbackImage;
+            if (fileInput.files && fileInput.files[0]) {
+                if (fileInput.files[0].size > 1048576) {
+                    alert("Image is too large! Please choose an image under 1MB.");
+                    return;
+                }
+                imageUrl = await convertFileToBase64(fileInput.files[0]);
+            }
+
+            const newProduct = { name, category, price, image: imageUrl };
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/products/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newProduct)
+                });
+
+                if (res.ok) {
+                    showToast(`Added "${name}" to Django!`);
+                    e.target.reset();
+                    fetchProducts();
+                } else {
+                    alert('Failed to save product.');
+                }
+            } catch (err) {
+                console.error("Error saving product:", err);
+            }
+        }
+
+        function convertFileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function updatePrice(id) {
+            const input = document.getElementById(`price-input-${id}`);
+            const newPrice = parseFloat(input.value);
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/products/${id}/`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ price: newPrice })
+                });
+
+                if (res.ok) {
+                    showToast('Price updated successfully!');
+                    fetchProducts();
+                } else {
+                    alert('Failed to update price.');
+                }
+            } catch (err) {
+                console.error("Error updating price:", err);
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (confirm('Delete this product from database?')) {
+                try {
+                    const res = await fetch(`${API_BASE_URL}/products/${id}/`, {
+                        method: 'DELETE'
+                    });
+
+                    if (res.ok) {
+                        showToast('Product deleted.');
+                        fetchProducts();
+                    } else {
+                        alert('Failed to delete.');
+                    }
+                } catch (err) {
+                    console.error("Error deleting product:", err);
+                }
+            }
+        }
+
+        function renderAdminOrders() {
+            const tbody = document.getElementById('admin-orders-table');
+            if (orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding: 1.5rem;">No orders placed yet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = orders.map(o => `
+                <tr>
+                    <td><strong>#${o.id}</strong></td>
+                    <td><small>${new Date(o.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small></td>
+                    <td><strong style="color:var(--primary-dark);">${o.room}</strong></td>
+                    <td>${o.items}</td>
+                    <td><strong>₹${parseFloat(o.total).toFixed(2)}</strong></td>
+                    <td>
+                        <select class="status-select" id="status-select-${o.id}" onchange="updateOrderStatus(${o.id}, this.value)">
+                            <option value="Received" ${o.status === 'Received' ? 'selected' : ''}>Received</option>
+                            <option value="Preparing" ${o.status === 'Preparing' ? 'selected' : ''}>Preparing</option>
+                            <option value="Ready" ${o.status === 'Ready' ? 'selected' : ''}>Ready</option>
+                            <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                        </select>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function updateOrderStatus(orderId, newStatus) {
+            // Instantly disable the select box while saving to prevent flicker/reset loops
+            const selectEl = document.getElementById(`status-select-${orderId}`);
+            if (selectEl) selectEl.disabled = true;
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/orders/${orderId}/`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                if (res.ok) {
+                    showToast(`Order #${orderId} marked as ${newStatus}`);
+                    // Update local state immediately so re-render respects it
+                    const targetOrder = orders.find(o => o.id === orderId);
+                    if (targetOrder) targetOrder.status = newStatus;
+                    fetchOrders();
+                } else {
+                    alert('Failed to update order status on server.');
+                    fetchOrders(); // Revert on failure
+                }
+            } catch (err) {
+                console.error("Error updating order:", err);
+                alert('Connection error updating order.');
+                fetchOrders();
+            }
+        }
+
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+
+        initAuth();
+    </script>
+</body>
+</html>
